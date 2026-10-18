@@ -52,7 +52,8 @@ function panel(){
  if(conflict)familyBox.append(btn('Recharger la version familiale disponible',()=>run(async()=>{const r=await call('mm_bootstrap');if(r.payload)r.payload=validate(r.payload);remote=r;panel();})));
  }
  }
- familyBox.append(btn('Se déconnecter',()=>run(async()=>{clearTimeout(timer);ready=false;await client.auth.signOut({scope:'local'});session=null;remote=null;invite=null;conflict=false;dirty=false;})));
+ if(globalThis.MissionsReminders)MissionsReminders.panel(familyBox,{call,child:remote?.role==='child',ready});
+ familyBox.append(btn('Se déconnecter',()=>run(async()=>{if(remote?.role==='child'&&globalThis.MissionsReminders)await MissionsReminders.disable();clearTimeout(timer);ready=false;await client.auth.signOut({scope:'local'});session=null;remote=null;invite=null;conflict=false;dirty=false;})));
  }
  if(remote?.role==='parent')renderDashboard(remote.payload);else{if(!session||!remote)familyBox.append(el('p','small','Ci-dessous : données de ce navigateur uniquement, tant que la connexion familiale n’est pas active.'));renderDashboard(state);}
 }
