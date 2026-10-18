@@ -1,6 +1,6 @@
 'use strict';
 const PREFIX='mes-missions-'+encodeURIComponent(self.registration.scope)+'-';
-const CACHE=PREFIX+'v5-300-positive-messages';
+const CACHE=PREFIX+'v5-1-fun-mvp';
 const ASSETS=['./','./index.html','./style.css','./themes.css','./core.js','./messages.js','./themes.js','./app.js','./manifest.webmanifest','./icon.svg',...['morning','horsebook','clean','garden','bows','minimal','kawaii','ponyrose','stables','country'].map(id=>'./art/'+id+'.webp')];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS.map(url=>new Request(url,{cache:'reload'})))).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith(PREFIX)&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
