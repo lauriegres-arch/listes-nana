@@ -4,7 +4,7 @@ function key(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),S
 function start(date=new Date()){const d=new Date(date);d.setHours(12,0,0,0);d.setDate(d.getDate()-29);return key(d);}
 function prune(history,date=new Date()){const from=start(date),to=key(date);return (history||[]).filter(r=>r.date>=from&&r.date<=to).sort((a,b)=>a.date.localeCompare(b.date));}
 function capture(state,date=new Date()){
- const today=key(date),record={date:today,updatedAt:date.toISOString(),lists:state.lists.map(l=>({id:l.id,title:l.title,group:l.group,resetMode:l.resetMode||'daily',scheduled:!l.activeDays||l.activeDays.includes(date.getDay()),tasks:l.tasks.map(t=>({id:t.id,text:t.text,time:t.time,done:t.done}))}))};
+ const today=key(date),record={date:today,updatedAt:date.toISOString(),lists:state.lists.map(l=>({id:l.id,title:l.title,group:l.group,resetMode:l.resetMode||'daily',scheduled:(!l.activeDays||l.activeDays.includes(date.getDay()))&&!(l.pausedUntil&&l.pausedUntil>=today),tasks:l.tasks.map(t=>({id:t.id,text:t.text,time:t.time,done:t.done}))}))};
  const history=prune(state.history,date),i=history.findIndex(r=>r.date===today);if(i<0)history.push(record);else history[i]=record;state.history=history;return record;
 }
 function validate(history){

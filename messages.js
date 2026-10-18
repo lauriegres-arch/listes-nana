@@ -308,14 +308,16 @@ const pools={
     "🥳 Tout est fait ! Grand sourire, petite danse et énorme fierté pour toi 🎉"
   ]
 };
-function choose(list,level,random=Math.random){
- const pool=pools[level];if(!pool)return '';
+function choose(list,level,random=Math.random,persona='child',tone='fun'){
+ const adults=typeof module==='object'?require('./adult-messages.js').AdultMessageBanks:root.AdultMessageBanks;
+ if(list.messagePersona&&list.messagePersona!==persona){list.messageChoices={};list.messageHistory={};}list.messagePersona=persona;
+ const pool=persona==='child'?pools[level]:adults?.[persona]?.[level];if(!pool)return '';
  list.messageChoices=list.messageChoices||{};
- const current=list.messageChoices[level];if(Number.isInteger(current)&&current>=0&&current<pool.length)return pool[current];
+ const current=list.messageChoices[level];if(Number.isInteger(current)&&current>=0&&current<pool.length)return tone==='discreet'?({50:'La moitié est faite. Beau chemin parcouru.',80:'Une belle avancée, à ton rythme.',100:'Liste terminée. Bravo pour tes efforts.'})[level]:pool[current];
  list.messageHistory=list.messageHistory||{};const recent=list.messageHistory[level]||[];
- const available=pool.map((_,i)=>i).filter(i=>!recent.includes(i));
+ const base=persona==='child'?100:50;let available=pool.map((_,i)=>i).filter(i=>!recent.some(n=>n%base===i%base)&&(tone!=='soft'||persona==='child'||i%50<25));if(!available.length)available=pool.map((_,i)=>i).filter(i=>!recent.includes(i));
  const selected=available[Math.min(available.length-1,Math.max(0,Math.floor(random()*available.length)))];
- list.messageChoices[level]=selected;list.messageHistory[level]=[...recent,selected].slice(-20);return pool[selected];
+ list.messageChoices[level]=selected;list.messageHistory[level]=[...recent,selected].slice(-20);return tone==='discreet'?({50:'La moitié est faite. Beau chemin parcouru.',80:'Une belle avancée, à ton rythme.',100:'Liste terminée. Bravo pour tes efforts.'})[level]:pool[selected];
 }
 root.MissionsMessages={pools,choose};
 })(typeof module==='object'?module.exports:globalThis);
